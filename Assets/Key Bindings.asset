@@ -21,3 +21,5 @@ MonoBehaviour:
     KeyCode: 97
   - KeyBindAction: 3
     KeyCode: 100
+  - KeyBindAction: 4
+    KeyCode: 323

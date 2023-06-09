@@ -24,7 +24,7 @@ public class StunOnCollide : MonoBehaviour
 
             Vector2 forceMagnitudeVector = forceMagnitude * forceDirection;
             
-            stunnable.Stun(forceMagnitudeVector, rotationAmount, stunDuration, rotationDuration);
+            stunnable.Stun(forceMagnitudeVector, rotationAmount, stunDuration, rotationDuration, false);
         }
     }
 }

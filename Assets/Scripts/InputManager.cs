@@ -4,8 +4,7 @@ public class InputManager : MonoBehaviour
 {
     public static InputManager instance;
     [SerializeField] private KeyBindings _bindings;
-
-
+    
     private void Awake()
     {
         if (instance == null)
