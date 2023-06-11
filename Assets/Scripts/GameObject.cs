@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PooledNetworkMonoBehavior : NetworkBehaviour
+public class GameObject : NetworkBehaviour
 {
     [SerializeField] private int initialPoolSize = 50;
 
@@ -16,7 +16,7 @@ public class PooledNetworkMonoBehavior : NetworkBehaviour
 
     public event Action OnDestroyEvent;
 
-    public T Get<T>(bool enable = true) where T : PooledNetworkMonoBehavior
+    public T Get<T>(bool enable = true) where T : GameObject
     {
         Pool pool = Pool.GetPool(this);
         T pooledObject = pool.Get<T>();
@@ -26,7 +26,7 @@ public class PooledNetworkMonoBehavior : NetworkBehaviour
         return pooledObject;
     }
 
-    public T Get<T>(Transform parent, bool resetTransform = false) where T : PooledNetworkMonoBehavior
+    public T Get<T>(Transform parent, bool resetTransform = false) where T : GameObject
     {
         T pooledObject = Get<T>();
         pooledObject.transform.SetParent(parent);
@@ -41,7 +41,7 @@ public class PooledNetworkMonoBehavior : NetworkBehaviour
     }
 
     public T Get<T>(Transform parent, Vector3 relativePosition, Quaternion relativeRotation)
-        where T : PooledNetworkMonoBehavior
+        where T : GameObject
     {
         T pooledObject = Get<T>();
         Transform pooledObjectTransform;

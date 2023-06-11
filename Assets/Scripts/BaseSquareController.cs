@@ -15,7 +15,7 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
     private Vector2 _currentMovement;
     private Coroutine _stunCoroutine;
         
-    protected void LookTowards(Vector3 target)
+    public void LookTowards(Vector3 target)
     {
         Vector3 objectPosition = transform.position;
 
@@ -43,18 +43,32 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
         SetCurrentMovement();
     }
 
-    protected void MoveClient(float horizontal, float vertical)
+    public void SetMovement(float horizontal, float vertical)
     {
         _xMove = horizontal;
         _yMove = vertical;
+    }
+    
+
+    public void MoveClient(float horizontal, float vertical)
+    {
+        _xMove = horizontal;
+        _yMove = vertical;
+        
         SetCurrentMovement();
+        
+       if (!IsStunned)
+           _rb.velocity = _currentMovement * Time.fixedDeltaTime;
+
+       _currentMovement = Vector2.zero;
+        
     }
     private void FixedUpdate()
     {
-        if (!IsStunned)
-            _rb.velocity = _currentMovement * Time.fixedDeltaTime;
-
-        _currentMovement = Vector2.zero;
+       //if (!IsStunned)
+       //    _rb.velocity = _currentMovement * Time.fixedDeltaTime;
+//
+       //_currentMovement = Vector2.zero;
     }
         
     public void Stun(Vector2 force, float rotation, float duration, float rotationDuration, bool fromPlayer)

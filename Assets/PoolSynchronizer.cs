@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PoolSynchronizer : NetworkBehaviour
 {
-    [SerializeField] private GameObject _poolPrefab;
+    [SerializeField] private UnityEngine.GameObject _poolPrefab;
     
     private void Start()
     {
@@ -22,7 +22,7 @@ public class PoolSynchronizer : NetworkBehaviour
     }
     
     
-    public Pool CreatePool(PooledNetworkMonoBehavior prefab)
+    public Pool CreatePool(GameObject prefab)
     {
         //if server then spawn and if not just lmao search for the name I guess
        // if (!IsServer && !IsHost)

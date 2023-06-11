@@ -1,4 +1,5 @@
 using System.Collections;
+using Network;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class PlayerTestSquare : BaseSquareController
     private InputManager _inputManager;
     [SerializeField] private float _speed = 10f;
     [SerializeField] private BasicShootController _basicShootController;
+    [SerializeField] private NetworkMovementController _movement;
+    
 
 
     private float _xInput;
@@ -23,11 +26,23 @@ public class PlayerTestSquare : BaseSquareController
 
     private void Update()
     {
-        if (!IsOwner) return;
-        if (IsStunned) return;
-        
-        LookTowardsMousePos(FindMousePosition());
-        ManageButtonMovement();
+        if (IsClient && IsLocalPlayer)
+        {
+            //LookTowardsMousePos(FindMousePosition());
+            ManageButtonMovement();
+            _movement.ProcessLocalPlayerMovement(new Vector2(_xInput, _yInput), FindMousePosition());
+            _xInput = 0;
+            _yInput = 0;
+        }
+        else
+        {
+            _movement.ProcessSimulatedPlayerMovement();
+        }
+      // if (!IsOwner) return;
+      // if (IsStunned) return;
+      // 
+      // LookTowardsMousePos(FindMousePosition());
+      // ManageButtonMovement();
     }
 
     private Vector3 FindMousePosition()
@@ -68,15 +83,13 @@ public class PlayerTestSquare : BaseSquareController
             _xInput = 1;
         }
 
-        // MoveServerRpc(_xInput, _yInput);
-        MoveClient(_xInput, _yInput);
-
-        _xInput = 0;
-        _yInput = 0;
-
+        //MoveServerRpc(_xInput, _yInput);
+        //MoveClient(_xInput, _yInput);
+        SetMovement(_xInput, _yInput);
+        
         if (_inputManager.GetKeyDown(KeyBindAction.Shoot))
         {
-            _basicShootController.Shoot();
+            _basicShootController.ShootRpc();
         }
     }
 }

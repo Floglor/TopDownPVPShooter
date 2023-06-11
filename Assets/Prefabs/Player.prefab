@@ -14,8 +14,7 @@ GameObject:
   - component: {fileID: 9143596671786567865}
   - component: {fileID: 9143596671786567869}
   - component: {fileID: 9143596671786567868}
-  - component: {fileID: 8347887927240304313}
-  - component: {fileID: -6896875992009946256}
+  - component: {fileID: 8864333532016068451}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -105,6 +104,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 350
   _basicShootController: {fileID: 9143596672052554802}
+  _movement: {fileID: 8864333532016068451}
 --- !u!50 &9143596671786567865
 Rigidbody2D:
   serializedVersion: 4
@@ -158,7 +158,7 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &8347887927240304313
+--- !u!114 &8864333532016068451
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -167,35 +167,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 9143596671786567866}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a03b8ff0374453d9079fc73a999c60f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 0
-  SyncRotAngleX: 0
-  SyncRotAngleY: 0
-  SyncRotAngleZ: 1
-  SyncScaleX: 0
-  SyncScaleY: 0
-  SyncScaleZ: 0
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  InLocalSpace: 0
-  Interpolate: 1
---- !u!114 &-6896875992009946256
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9143596671786567866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _square: {fileID: 9143596671786567864}
 --- !u!1 &9143596672052554797
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,7 +182,6 @@ GameObject:
   - component: {fileID: 9143596672052554796}
   - component: {fileID: 9143596672052554803}
   - component: {fileID: 9143596672052554802}
-  - component: {fileID: 6464630854195454322}
   m_Layer: 0
   m_Name: Pointer
   m_TagString: Untagged
@@ -294,18 +268,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16acd34bb39ea0a44a1112325a292ef0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _basicProjectile: {fileID: 4139701843313621097, guid: 3a7eed7736ce83d4d89cf6a0ebed02fc, type: 3}
+  _basicProjectile: {fileID: 4139701843313621103, guid: 3a7eed7736ce83d4d89cf6a0ebed02fc, type: 3}
   _spawnCooldown: 0.5
---- !u!114 &6464630854195454322
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9143596672052554797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32b20c3c4e0cc634f81ca7d6a6180caa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _poolPrefab: {fileID: 4171813210959311573, guid: f9b93f29ae174b84fb9981ee16906e47, type: 3}

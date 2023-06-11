@@ -102,7 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb813c4dbc6d497fa26b1fb248dd4ce4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialPoolSize: 50
   speed: 15
   forceMagnitude: 100
   rotationAmount: 180
@@ -196,7 +195,7 @@ MonoBehaviour:
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
 --- !u!114 &1250868207468883506
 MonoBehaviour:
   m_ObjectHideFlags: 0

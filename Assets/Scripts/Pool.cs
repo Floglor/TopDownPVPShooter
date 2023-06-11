@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class Pool : NetworkBehaviour
 {
-    private static readonly Dictionary<PooledNetworkMonoBehavior, Pool> _pools =
-        new Dictionary<PooledNetworkMonoBehavior, Pool>();
+    private static readonly Dictionary<GameObject, Pool> _pools =
+        new Dictionary<GameObject, Pool>();
 
-    private readonly List<PooledNetworkMonoBehavior> _disabledObjects = new List<PooledNetworkMonoBehavior>();
+    private readonly List<GameObject> _disabledObjects = new List<GameObject>();
 
-    private readonly Queue<PooledNetworkMonoBehavior> _objects = new Queue<PooledNetworkMonoBehavior>();
+    private readonly Queue<GameObject> _objects = new Queue<GameObject>();
 
-    private PooledNetworkMonoBehavior _prefab;
+    private GameObject _prefab;
 
     private void Update()
     {
@@ -26,12 +26,12 @@ public class Pool : NetworkBehaviour
         _objects.Clear();
     }
 
-    public void SetPrefab(PooledNetworkMonoBehavior prefab)
+    public void SetPrefab(GameObject prefab)
     {
         _prefab = prefab;
     }
 
-    private void AddObjectToAvailable(PooledNetworkMonoBehavior pooledObject)
+    private void AddObjectToAvailable(GameObject pooledObject)
     {
         _disabledObjects.Add(pooledObject);
         _objects.Enqueue(pooledObject);
@@ -41,7 +41,7 @@ public class Pool : NetworkBehaviour
     {
         for (int i = 0; i < _prefab.InitialPoolSize; i++)
         {
-            PooledNetworkMonoBehavior pooledObject = Instantiate(_prefab);
+            GameObject pooledObject = Instantiate(_prefab);
             pooledObject.GetComponent<NetworkObject>().Spawn(true);
             pooledObject.gameObject.name += " " + i;
 
@@ -52,11 +52,11 @@ public class Pool : NetworkBehaviour
         }
     }
 
-    public T Get<T>() where T : PooledNetworkMonoBehavior
+    public T Get<T>() where T : GameObject
     {
         if (_objects.Count == 0) GrowPool();
 
-        PooledNetworkMonoBehavior pooledObject = _objects.Dequeue();
+        GameObject pooledObject = _objects.Dequeue();
         if (pooledObject == null) return null;
         return pooledObject as T;
     }
@@ -64,7 +64,7 @@ public class Pool : NetworkBehaviour
     private void MakeDisabledObjectsChildren()
     {
         if (_disabledObjects.Count <= 0) return;
-        foreach (PooledNetworkMonoBehavior pooledObject in _disabledObjects.Where(pooledObject =>
+        foreach (GameObject pooledObject in _disabledObjects.Where(pooledObject =>
                      pooledObject.gameObject.activeInHierarchy == false))
         {
             pooledObject.transform.SetParent(transform);
@@ -75,12 +75,12 @@ public class Pool : NetworkBehaviour
         _disabledObjects.Clear();
     }
 
-    public static Pool GetPool(PooledNetworkMonoBehavior prefab)
+    public static Pool GetPool(GameObject prefab)
     {
         if (_pools.ContainsKey(prefab))
             return _pools[prefab];
 
-        Pool pool = GameObject.Find("Pool-" + prefab.name).GetComponent<Pool>();
+        Pool pool = UnityEngine.GameObject.Find("Pool-" + prefab.name).GetComponent<Pool>();
         _pools.Add(prefab, pool);
         return pool;
     }

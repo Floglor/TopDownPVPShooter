@@ -7,7 +7,7 @@ namespace Extensions
     public static class ComponentExtension
     {
         
-        public static T GetInterface<T>(this GameObject inObj) where T : class
+        public static T GetInterface<T>(this UnityEngine.GameObject inObj) where T : class
         {
             if (!typeof(T).IsInterface) {
                 Debug.LogError(typeof(T).ToString() + ": is not an actual interface!");
@@ -17,7 +17,7 @@ namespace Extensions
             return inObj.GetComponents<Component>().OfType<T>().FirstOrDefault();
         }
  
-        public static IEnumerable<T> GetInterfaces<T>(this GameObject inObj) where T : class
+        public static IEnumerable<T> GetInterfaces<T>(this UnityEngine.GameObject inObj) where T : class
         {
             if (!typeof(T).IsInterface) {
                 Debug.LogError(typeof(T).ToString() + ": is not an actual interface!");

@@ -1,27 +1,29 @@
-﻿using UnityEngine;
+﻿    using Unity.Netcode;
+using UnityEngine;
 
-public class Projectile : PooledNetworkMonoBehavior
+public class Projectile : NetworkBehaviour
 {
-    [SerializeField] private float speed = 10f; 
+    [SerializeField] private float speed = 10f;
     [SerializeField] private float forceMagnitude = 100f;
     [SerializeField] private float rotationAmount = 180f;
     [SerializeField] private float stunDuration = 1f;
     [SerializeField] private float rotationDuration = 1f;
-        
+
+
     private Vector3 _direction;
 
     public void SetVector(Vector3 vector)
     {
         _direction = vector.normalized;
-        
+
         float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
     private void FixedUpdate()
     {
-        transform.position += transform.right * speed * Time.fixedDeltaTime;
-
+        if (IsServer || IsHost)
+            transform.position += transform.right * speed * Time.fixedDeltaTime;
     }
 
     private void OnCollisionEnter2D(Collision2D col)
@@ -32,7 +34,9 @@ public class Projectile : PooledNetworkMonoBehavior
         }
         else if (col.collider.CompareTag("Wall"))
         {
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
+            NetworkObject networkObject = gameObject.GetComponent<NetworkObject>();
+            networkObject.Despawn();
         }
     }
 

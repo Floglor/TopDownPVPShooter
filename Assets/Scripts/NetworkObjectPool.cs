@@ -18,10 +18,10 @@ public class NetworkObjectPool : NetworkBehaviour
 
     [SerializeField] List<PoolConfigObject> PooledPrefabsList;
 
-    HashSet<GameObject> m_Prefabs = new HashSet<GameObject>();
+    HashSet<UnityEngine.GameObject> m_Prefabs = new HashSet<UnityEngine.GameObject>();
 
-    Dictionary<GameObject, ObjectPool<NetworkObject>> m_PooledObjects =
-        new Dictionary<GameObject, ObjectPool<NetworkObject>>();
+    Dictionary<UnityEngine.GameObject, ObjectPool<NetworkObject>> m_PooledObjects =
+        new Dictionary<UnityEngine.GameObject, ObjectPool<NetworkObject>>();
 
     public void Awake()
     {
@@ -38,7 +38,7 @@ public class NetworkObjectPool : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         // Registers all objects in PooledPrefabsList to the cache.
-        foreach (var configObject in PooledPrefabsList)
+        foreach (PoolConfigObject configObject in PooledPrefabsList)
         {
             RegisterPrefabInternal(configObject.Prefab, configObject.PrewarmCount);
         }
@@ -47,7 +47,7 @@ public class NetworkObjectPool : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         // Unregisters all objects in PooledPrefabsList from the cache.
-        foreach (var prefab in m_Prefabs)
+        foreach (UnityEngine.GameObject prefab in m_Prefabs)
         {
             // Unregister Netcode Spawn handlers
             NetworkManager.Singleton.PrefabHandler.RemoveHandler(prefab);
@@ -60,9 +60,9 @@ public class NetworkObjectPool : NetworkBehaviour
 
     public void OnValidate()
     {
-        for (var i = 0; i < PooledPrefabsList.Count; i++)
+        for (int i = 0; i < PooledPrefabsList.Count; i++)
         {
-            var prefab = PooledPrefabsList[i].Prefab;
+            UnityEngine.GameObject prefab = PooledPrefabsList[i].Prefab;
             if (prefab != null)
             {
                 Assert.IsNotNull(prefab.GetComponent<NetworkObject>(),
@@ -84,11 +84,11 @@ public class NetworkObjectPool : NetworkBehaviour
     /// <param name="position">The position to spawn the object at.</param>
     /// <param name="rotation">The rotation to spawn the object with.</param>
     /// <returns></returns>
-    public NetworkObject GetNetworkObject(GameObject prefab, Vector3 position, Quaternion rotation)
+    public NetworkObject GetNetworkObject(UnityEngine.GameObject prefab, Vector3 position, Quaternion rotation)
     {
-        var networkObject = m_PooledObjects[prefab].Get();
+        NetworkObject networkObject = m_PooledObjects[prefab].Get();
 
-        var noTransform = networkObject.transform;
+        Transform noTransform = networkObject.transform;
         noTransform.position = position;
         noTransform.rotation = rotation;
 
@@ -98,7 +98,7 @@ public class NetworkObjectPool : NetworkBehaviour
     /// <summary>
     /// Return an object to the pool (reset objects before returning).
     /// </summary>
-    public void ReturnNetworkObject(NetworkObject networkObject, GameObject prefab)
+    public void ReturnNetworkObject(NetworkObject networkObject, UnityEngine.GameObject prefab)
     {
         m_PooledObjects[prefab].Release(networkObject);
     }
@@ -106,7 +106,7 @@ public class NetworkObjectPool : NetworkBehaviour
     /// <summary>
     /// Builds up the cache for a prefab.
     /// </summary>
-    void RegisterPrefabInternal(GameObject prefab, int prewarmCount)
+    void RegisterPrefabInternal(UnityEngine.GameObject prefab, int prewarmCount)
     {
         NetworkObject CreateFunc()
         {
@@ -154,16 +154,16 @@ public class NetworkObjectPool : NetworkBehaviour
 [Serializable]
 struct PoolConfigObject
 {
-    public GameObject Prefab;
+    public UnityEngine.GameObject Prefab;
     public int PrewarmCount;
 }
 
 class PooledPrefabInstanceHandler : INetworkPrefabInstanceHandler
 {
-    GameObject m_Prefab;
+    UnityEngine.GameObject m_Prefab;
     NetworkObjectPool m_Pool;
 
-    public PooledPrefabInstanceHandler(GameObject prefab, NetworkObjectPool pool)
+    public PooledPrefabInstanceHandler(UnityEngine.GameObject prefab, NetworkObjectPool pool)
     {
         m_Prefab = prefab;
         m_Pool = pool;
