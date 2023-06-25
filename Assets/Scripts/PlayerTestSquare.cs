@@ -17,6 +17,16 @@ public class PlayerTestSquare : BaseSquareController
     private float _xInput;
     private float _yInput;
 
+    public Vector2 GetMovementInput()
+    {
+        return new Vector2(_xInput, _yInput);
+    }
+
+    //public Vector2 GetLookInput()
+    //{
+    //    
+    //}
+
     private void Start()
     {
         Speed = _speed;

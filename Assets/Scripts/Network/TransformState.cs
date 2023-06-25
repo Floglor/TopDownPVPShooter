@@ -8,6 +8,8 @@ namespace Network
         public int Tick;
         public Vector3 Position;
         public Quaternion Rotation;
+        public float AngularVelocity;
+        public Vector2 Velocity;
         public bool HasStartedMoving;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -19,6 +21,9 @@ namespace Network
                 reader.ReadValueSafe(out Position);
                 reader.ReadValueSafe(out Rotation);
                 reader.ReadValueSafe(out HasStartedMoving);
+                reader.ReadValueSafe(out AngularVelocity);
+                reader.ReadValueSafe(out Velocity);
+
             }
             else
             {
@@ -27,6 +32,9 @@ namespace Network
                 writer.WriteValueSafe(Position);
                 writer.WriteValueSafe(Rotation);
                 writer.WriteValueSafe(HasStartedMoving);
+                writer.WriteValueSafe(AngularVelocity);
+                writer.WriteValueSafe(Velocity);
+
             }
         }
     }

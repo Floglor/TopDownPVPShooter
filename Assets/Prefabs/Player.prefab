@@ -102,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077fbaa5a86766a49b0c349c53979ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Rb: {fileID: 0}
   _speed: 350
   _basicShootController: {fileID: 9143596672052554802}
   _movement: {fileID: 8864333532016068451}
@@ -171,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _square: {fileID: 9143596671786567864}
+  _gizmoColor: {r: 1, g: 0.3160377, b: 0.8678568, a: 1}
 --- !u!1 &9143596672052554797
 GameObject:
   m_ObjectHideFlags: 0

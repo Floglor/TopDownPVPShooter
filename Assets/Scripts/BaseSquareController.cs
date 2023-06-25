@@ -11,7 +11,7 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
     private float _yMove;
 
     protected bool IsStunned;
-    private Rigidbody2D _rb;
+    public  Rigidbody2D Rb;
     private Vector2 _currentMovement;
     private Coroutine _stunCoroutine;
         
@@ -27,7 +27,7 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
     
     private void Awake()
     {
-        _rb = GetComponent<Rigidbody2D>();
+        Rb = GetComponent<Rigidbody2D>();
     }
         
     private void SetCurrentMovement()
@@ -58,10 +58,34 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
         SetCurrentMovement();
         
        if (!IsStunned)
-           _rb.velocity = _currentMovement * Time.fixedDeltaTime;
+           Rb.velocity = _currentMovement * Time.fixedDeltaTime;
 
        _currentMovement = Vector2.zero;
+    }
+    
+    public void MoveClientWithTime(float horizontal, float vertical, float tickRate)
+    {
+        _xMove = horizontal;
+        _yMove = vertical;
         
+        SetCurrentMovement();
+        
+        if (!IsStunned)
+            Rb.velocity = _currentMovement * tickRate;
+
+        _currentMovement = Vector2.zero;
+    }
+    
+    public void MoveClientWithTimeTransform(float horizontal, float vertical, float tickRate)
+    {
+        // Calculate the movement vector based on the horizontal and vertical inputs.
+        Vector3 movement = new Vector3(horizontal, 0f, vertical);
+
+        // Normalize the movement vector so that diagonal movement isn't faster.
+        movement = movement.normalized * Speed * tickRate;
+
+        // Apply the movement to the client's transform.
+        transform.Translate(movement);
     }
     private void FixedUpdate()
     {
@@ -83,7 +107,7 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
             StopCoroutine(_stunCoroutine);
         }
         
-        _rb.AddForce(force, ForceMode2D.Impulse);
+        Rb.AddForce(force, ForceMode2D.Impulse);
 
         StartCoroutine(RotateOverTime(rotation, rotationDuration));
 
