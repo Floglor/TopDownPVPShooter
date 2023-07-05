@@ -40,6 +40,7 @@ public class BasicShootController : NetworkBehaviour
 
         projectileObject.transform.position = transform.position;
         Projectile projectile = projectileObject.GetComponent<Projectile>();
+        projectile.Owner = this;
         projectile.SetVector(transform.right.normalized);
         
         projectileObject.Spawn();
@@ -47,6 +48,8 @@ public class BasicShootController : NetworkBehaviour
 
     public void ShootRpc()
     {
+        if (!IsOwner) return;
+        
         if (!(Time.time - _lastSpawnTime >= _spawnCooldown)) return;
 
         SpawnProjectileServerRpc(transform.position, Quaternion.identity);

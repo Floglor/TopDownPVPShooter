@@ -14,7 +14,7 @@ namespace Network
 
 
         private int _tick = 0;
-        private float _tickRate = 1f / 60f;
+        private float _tickRate = 1f / 120f;
         private float _tickDeltaTime = 0f;
 
         private const int BUFFER_SIZE = 1024;
@@ -26,6 +26,7 @@ namespace Network
         public NetworkVariable<TransformState> ServerTransformState = new NetworkVariable<TransformState>();
         private TransformState _previousTransformState;
         private string _latestPositionDifference;
+        
 
         private void OnEnable()
         {
@@ -36,10 +37,16 @@ namespace Network
 
         private int _functionCalls = 0;
 
+        private int debugCounter = 0;
         private void OnServerStateChanged(TransformState previousState, TransformState serverState)
         {
             if (!IsLocalPlayer) return;
-
+            debugCounter++;
+            if (debugCounter >= 20)
+            {
+                //Debug.Log($"previousState: {previousState.Position}, serverState: {serverState.Position}");
+                debugCounter = 0;
+            }
 
             if (_previousTransformState == null)
             {
@@ -78,6 +85,7 @@ namespace Network
         }
 
 
+        
         private void ReplayInputs(TransformState serverState)
         {
             IEnumerable<InputState> inputs = _inputStates.Where(input => input.Tick > serverState.Tick);
@@ -87,15 +95,15 @@ namespace Network
             {
                 if (inputState == null) return;
                 //MoveServerRpc(_tick, inputState.movementInput, inputState.lookInput);
-                _square.MoveClientWithTime(inputState.movementInput.x, inputState.movementInput.y, _tickRate);
-                _square.LookTowards(inputState.lookInput);
+                _square.MoveClientWithTime(inputState.MovementInput.x, inputState.MovementInput.y, _tickRate);
+                _square.LookTowards(inputState.LookInput);
 
                 TransformState transformState = new TransformState()
                 {
                     Tick = inputState.Tick,
                     Position = _square.transform.position,
-                    Rotation = _square.transform.rotation,
-                    AngularVelocity = _square.Rb.angularVelocity,
+                    Rotation = _square.Rb.rotation,
+                    //AngularVelocity = _square.Rb.angularVelocity,
                     Velocity = _square.Rb.velocity,
                     HasStartedMoving = true
                 };
@@ -108,7 +116,6 @@ namespace Network
                         break;
                     }
                 }
-
                 //Physics2D.Simulate(_tickDeltaTime);
             }
         }
@@ -116,9 +123,9 @@ namespace Network
         private void SnapBackToServerPosition(TransformState state)
         {
             _square.transform.position = state.Position;
-            _square.transform.rotation = state.Rotation;
+            _square.Rb.rotation = state.Rotation;
             _square.Rb.velocity = state.Velocity;
-            _square.Rb.angularVelocity = state.AngularVelocity;
+            //_square.Rb.angularVelocity = state.AngularVelocity;
 
             for (int i = 0; i < _transformStates.Length; i++)
             {
@@ -141,16 +148,16 @@ namespace Network
                 InputState inputState = new InputState()
                 {
                     Tick = _tick,
-                    movementInput = movementInput,
-                    lookInput = lookInput
+                    MovementInput = movementInput,
+                    LookInput = lookInput
                 };
 
                 TransformState transformState = new TransformState()
                 {
                     Tick = _tick,
                     Position = _square.transform.position,
-                    Rotation = _square.transform.rotation,
-                    AngularVelocity = _square.Rb.angularVelocity,
+                    Rotation = _square.Rb.rotation,
+                    //AngularVelocity = _square.Rb.angularVelocity,
                     Velocity = _square.Rb.velocity,
                     HasStartedMoving = true
                 };
@@ -180,8 +187,8 @@ namespace Network
                     {
                         Tick = _tick,
                         Position = _square.transform.position,
-                        Rotation = _square.transform.rotation,
-                        AngularVelocity = _square.Rb.angularVelocity,
+                        Rotation = _square.Rb.rotation,
+                        //AngularVelocity = _square.Rb.angularVelocity,
                         Velocity = _square.Rb.velocity,
                         HasStartedMoving = true
                     };
@@ -207,14 +214,14 @@ namespace Network
                 if (ServerTransformState.Value.HasStartedMoving)
                 {
                     _square.transform.position = ServerTransformState.Value.Position;
-                    _square.transform.rotation = ServerTransformState.Value.Rotation;
-                    _square.Rb.angularVelocity = ServerTransformState.Value.AngularVelocity;
+                    _square.Rb.rotation = ServerTransformState.Value.Rotation;
+                    //_square.Rb.angularVelocity = ServerTransformState.Value.AngularVelocity;
                     _square.Rb.velocity = ServerTransformState.Value.Velocity;
                 }
 
+                Physics2D.Simulate(_tickRate);
                 _tickDeltaTime -= _tickRate;
                 _tick++;
-                Physics2D.Simulate(_tickRate);
             }
         }
 
@@ -233,8 +240,8 @@ namespace Network
             {
                 Tick = tick,
                 Position = _square.transform.position,
-                Rotation = _square.transform.rotation,
-                AngularVelocity = _square.Rb.angularVelocity,
+                Rotation = _square.Rb.rotation,
+               // AngularVelocity = _square.Rb.angularVelocity,
                 Velocity = _square.Rb.velocity,
                 HasStartedMoving = true
             };
@@ -253,8 +260,8 @@ namespace Network
             {
                 Tick = tick,
                 Position = _square.transform.position,
-                Rotation = _square.transform.rotation,
-                AngularVelocity = _square.Rb.angularVelocity,
+                Rotation = _square.Rb.rotation,
+                //AngularVelocity = _square.Rb.angularVelocity,
                 Velocity = _square.Rb.velocity,
                 HasStartedMoving = true
             };

@@ -22,7 +22,8 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
         float angle = Mathf.Atan2(target.y - objectPosition.y, target.x - objectPosition.x) *
                       Mathf.Rad2Deg;
 
-        transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+        //transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+        Rb.rotation = angle;
     }
     
     private void Awake()
@@ -56,11 +57,11 @@ public abstract class BaseSquareController : NetworkBehaviour, IStunnable
         _yMove = vertical;
         
         SetCurrentMovement();
-        
-       if (!IsStunned)
+
+        if (!IsStunned)
            Rb.velocity = _currentMovement * Time.fixedDeltaTime;
 
-       _currentMovement = Vector2.zero;
+        _currentMovement = Vector2.zero;
     }
     
     public void MoveClientWithTime(float horizontal, float vertical, float tickRate)
