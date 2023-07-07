@@ -24,6 +24,11 @@ namespace Network
             ServerTransformState.OnValueChanged += OnServerTransformStateChanged;
         }
 
+        public void StopMovement()
+        {
+            
+        }
+
         private void OnServerTransformStateChanged(TransformState previousvalue, TransformState newvalue)
         {
             if (!IsOwner)
@@ -33,6 +38,7 @@ namespace Network
                 _square.Rb.position = newvalue.Position;
                 _square.Rb.rotation = newvalue.Rotation;
                 _square.Rb.velocity = newvalue.Velocity;
+                _square.Rb.angularVelocity = newvalue.AngularVelocity;
 
                 return;
             }
@@ -93,7 +99,7 @@ namespace Network
                 Position = _square.Rb.position,
                 Rotation = _square.Rb.rotation,
                 Velocity = _square.Rb.velocity,
-                //  AngularVelocity = _square.Rb.angularVelocity,
+                AngularVelocity = _square.Rb.angularVelocity,
                 Tick = _currentTick++
             };
 
@@ -143,7 +149,7 @@ namespace Network
                     Tick = _currentTick,
                     Position = _square.transform.position,
                     Rotation = _square.Rb.rotation,
-                    //AngularVelocity = _square.Rb.angularVelocity,
+                    AngularVelocity = _square.Rb.angularVelocity,
                     Velocity = _square.Rb.velocity,
                     HasStartedMoving = true
                 };

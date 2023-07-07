@@ -1,3 +1,4 @@
+using Cinemachine;
 using Network;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class PlayerTestSquare : BaseSquareController
     private InputManager _inputManager;
     [SerializeField] private float _speed = 10f;
     [SerializeField] private BasicShootController _basicShootController;
-    [SerializeField] private NetworkMovementController _movement;
+    
 
 
     public BasicShootController BasicShootController => _basicShootController;
@@ -109,7 +110,8 @@ public class PlayerTestSquare : BaseSquareController
         //MoveClient(_xInput, _yInput);
         SetMovement(_xInput, _yInput);
         
-        if (_inputManager.GetKeyDown(KeyBindAction.Shoot))
+        
+        if (_inputManager.GetKeyDown(KeyBindAction.Shoot) && !IsStunned.Value && CanMoveAndShoot.Value)
         {
             _basicShootController.ShootRpc();
         }
