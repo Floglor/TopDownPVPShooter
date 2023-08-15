@@ -1,5 +1,8 @@
-﻿using Unity.Netcode;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using Utility;
 
 namespace Network
 {
@@ -13,21 +16,30 @@ namespace Network
         private InputState[] _inputStatesBuffer = new InputState[BUFFER_SIZE];
 
         private InputState _currentInput;
+        private const float LERP_TIME = 0.01f;
+        private PositionLerper _positionLerper;
+
 
         public NetworkVariable<TransformState> ServerTransformState = new NetworkVariable<TransformState>();
         public NetworkVariable<InputState> ServerInputState = new NetworkVariable<InputState>();
+        
+        private List<Vector3> positionErrors = new List<Vector3>();
 
+        
         private void OnEnable()
         {
             _square = FindObjectOfType<PlayerTestSquare>();
             ServerInputState.OnValueChanged += OnServerInputStateChanged;
             ServerTransformState.OnValueChanged += OnServerTransformStateChanged;
+            StartCoroutine(LogCounter());
         }
 
-        public void StopMovement()
+        public override void OnNetworkSpawn()
         {
-            
+            base.OnNetworkSpawn();
+            _positionLerper = new PositionLerper(transform.position, LERP_TIME);
         }
+
 
         private void OnServerTransformStateChanged(TransformState previousvalue, TransformState newvalue)
         {
@@ -36,6 +48,7 @@ namespace Network
                 if (!IsClient) return;
 
                 _square.Rb.position = newvalue.Position;
+                //_square.Rb.position = _positionLerper.LerpPosition(_square.Rb.position, newvalue.Position);
                 _square.Rb.rotation = newvalue.Rotation;
                 _square.Rb.velocity = newvalue.Velocity;
                 _square.Rb.angularVelocity = newvalue.AngularVelocity;
@@ -45,43 +58,59 @@ namespace Network
 
             int bufferSlot = newvalue.Tick % 1024;
 
-            Vector3 positionError = _transformStateBuffer[bufferSlot].Position;
+            Vector3 positionError = _transformStateBuffer[bufferSlot].Position - newvalue.Position;
+            float rotationError = _transformStateBuffer[bufferSlot].Rotation - newvalue.Rotation;
 
             if (positionError.sqrMagnitude > 0.0000001)
             {
+                positionErrors.Add(positionError);
                 RewindMovement(newvalue);
             }
         }
 
+        private int counter = 0;
         private void RewindMovement(TransformState newvalue)
         {
+            counter++;
             int bufferSlot;
             Rigidbody2D rb = _square.GetComponent<Rigidbody2D>();
-            rb.position = newvalue.Position;
-            rb.rotation = newvalue.Rotation;
+           //rb.position = newvalue.Position;
+           rb.position = _positionLerper.LerpPosition(rb.position, newvalue.Position);
+            //rb.rotation = newvalue.Rotation;
             rb.velocity = newvalue.Velocity;
+            rb.angularVelocity = newvalue.AngularVelocity;
 
             int rewindTick = newvalue.Tick;
             while (rewindTick < _currentTick)
             {
                 bufferSlot = rewindTick % 1024;
-                _inputStatesBuffer[bufferSlot] = _currentInput;
+                //_inputStatesBuffer[bufferSlot] = _currentInput;
                 _transformStateBuffer[bufferSlot].Position = _square.Rb.position;
-                if (_transformStateBuffer == null)
-                {
-                    Debug.LogError("_transformStateBuffer is null");
-                }
-
-                if (_transformStateBuffer[bufferSlot] == null)
-                {
-                    Debug.LogError($"_transformStateBuffer[{bufferSlot}] is null");
-                }
-
                 _transformStateBuffer[bufferSlot].Rotation = _square.Rb.rotation;
-                _square.MoveClient(_currentInput.MovementInput.x, _currentInput.MovementInput.y);
+                
+                //player_client.MovePlaye(player_rigidbody, this.client_input_buffer[buffer_slot]);
+                _square.MoveClient(_inputStatesBuffer[bufferSlot].MovementInput.x, _inputStatesBuffer[bufferSlot].MovementInput.y);
 
                 Physics2D.Simulate(Time.deltaTime);
                 ++rewindTick;
+            }
+        }
+
+        private int countTimer = 10;
+        private IEnumerator LogCounter()
+        {
+            while (true)
+            {
+                Debug.Log($"RewindMoment count per {countTimer} seconds: {counter}");
+
+               //foreach (Vector3 positionError in positionErrors)
+               //{
+               //    Debug.Log(positionError);
+               //}
+
+                positionErrors.Clear();
+                counter = 0;
+                yield return new WaitForSeconds(countTimer);
             }
         }
 
@@ -90,7 +119,9 @@ namespace Network
             if (!IsServer) return;
 
             _square.MoveClient(newvalue.MovementInput.x, newvalue.MovementInput.y);
-            _square.LookTowards(newvalue.LookInput);
+            
+            if (!IsOwner)
+                _square.LookTowards(newvalue.LookInput);
 
             Physics2D.Simulate(Time.fixedDeltaTime);
 

@@ -33,7 +33,7 @@ public class BasicShootController : NetworkBehaviour
     }
     
     [ServerRpc]
-    public void SpawnProjectileServerRpc(Vector3 position, Quaternion rotation)
+    public void SpawnProjectileServerRpc(Vector3 position, Quaternion rotation, Vector3 right)
     {
         NetworkObject projectileObject =
             NetworkObjectPool.Singleton.GetNetworkObject(_basicProjectile, position, rotation);
@@ -41,7 +41,7 @@ public class BasicShootController : NetworkBehaviour
         projectileObject.transform.position = transform.position;
         Projectile projectile = projectileObject.GetComponent<Projectile>();
         projectile.Owner = this;
-        projectile.SetVector(transform.right.normalized);
+        projectile.SetVector(right.normalized);
         
         projectileObject.Spawn();
     }
@@ -52,7 +52,7 @@ public class BasicShootController : NetworkBehaviour
         
         if (!(Time.time - _lastSpawnTime >= _spawnCooldown)) return;
 
-        SpawnProjectileServerRpc(transform.position, Quaternion.identity);
+        SpawnProjectileServerRpc(transform.position, Quaternion.identity, transform.right);
         
 
         _lastSpawnTime = Time.time;

@@ -48,7 +48,7 @@ public class Projectile : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (!IsServer) return;
+        if (!IsServer || !IsSpawned) return;
         
         if (col.GetComponent<Collider2D>().CompareTag("Wall"))
         {

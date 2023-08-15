@@ -33,6 +33,22 @@ namespace Metagame
             _1PScore.text = "0";
             _2PScore.text = "0";
             
+            scoreOne.OnValueChanged += UpdateScoreOneClientRpc;
+            scoreTwo.OnValueChanged += UpdateScoreTwoClientRpc;
+
+
+        }
+
+        [ClientRpc]
+        private void UpdateScoreOneClientRpc(int previousvalue, int newvalue)
+        {
+            _1PScore.text = newvalue.ToString();
+        }
+        
+        [ClientRpc]
+        private void UpdateScoreTwoClientRpc(int previousvalue, int newvalue)
+        {
+            _2PScore.text = newvalue.ToString();
         }
 
         [ClientRpc]
@@ -61,8 +77,6 @@ namespace Metagame
                 ResetRound();
                 Debug.Log("Player two won the round");
             }
-
-            StartCoroutine(SetScore());
         }
 
         IEnumerator SetScore()

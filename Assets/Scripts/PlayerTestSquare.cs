@@ -1,5 +1,4 @@
-using Cinemachine;
-using Network;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,6 +9,8 @@ public class PlayerTestSquare : BaseSquareController
     private InputManager _inputManager;
     [SerializeField] private float _speed = 10f;
     [SerializeField] private BasicShootController _basicShootController;
+    [SerializeField] private List<Sprite> _sprites;
+    
     
 
 
@@ -33,7 +34,8 @@ public class PlayerTestSquare : BaseSquareController
         Speed = _speed;
 
         _inputManager = InputManager.instance;
-        
+
+        GetComponent<SpriteRenderer>().sprite = _sprites[Random.Range(0, 2)];
     }
 
     private void Update()

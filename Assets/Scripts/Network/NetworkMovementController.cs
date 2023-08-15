@@ -38,10 +38,12 @@ namespace Network
         private int _functionCalls = 0;
 
         private int debugCounter = 0;
+        private List<Vector3> positionErrors;
         private void OnServerStateChanged(TransformState previousState, TransformState serverState)
         {
             if (!IsLocalPlayer) return;
             debugCounter++;
+            
             if (debugCounter >= 20)
             {
                 //Debug.Log($"previousState: {previousState.Position}, serverState: {serverState.Position}");
@@ -59,6 +61,7 @@ namespace Network
 
             if (positionError.sqrMagnitude > 0.0000001f)
             {
+                positionErrors.Add(positionError);
                 SnapBackToServerPosition(serverState);
                 ReplayInputs(serverState);
             }
@@ -68,6 +71,7 @@ namespace Network
 
         private void StartLoggingFunctionCalls()
         {
+            Debug.Log("starting logging calls per second");
             StartCoroutine(LogFunctionCallsPerSecond());
         }
 
@@ -79,6 +83,7 @@ namespace Network
 
                 float callsPerSecond = _functionCalls / 10f; // Calculate calls per second
                 Debug.Log($"Snapback {callsPerSecond:f2} calls per 10 seconds, tick: {_tick}");
+                
 
                 _functionCalls = 0; // Reset the counter
             }
